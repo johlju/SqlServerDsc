@@ -347,6 +347,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
+* Changes to xSQLServerSetup
+  - Now `Features` parameter is case-insensitive. 
 
 ### 2.0.0.0
 * Added resources
