@@ -36,7 +36,6 @@ $copyItemParameters = @{
     Destination = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules'
     Recurse = $true
     Force = $true
-    Verbose = $true
 }
 
 Copy-Item @copyItemParameters
