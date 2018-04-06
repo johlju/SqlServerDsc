@@ -19,7 +19,7 @@ $ConfigurationData = @{
             DriveLetter          = $mockIsoMediaDriveLetter
 
             DatabaseServerName   = $env:COMPUTERNAME
-            DatabaseInstanceName = 'DSCSQL2016'
+            DatabaseInstanceName = 'DSCSQLTEST'
 
             CertificateFile      = $env:DscPublicCertificatePath
         }

@@ -3,7 +3,7 @@ $ConfigurationData = @{
         @{
             NodeName        = 'localhost'
             ServerName      = $env:COMPUTERNAME
-            InstanceName    = 'DSCSQL2016'
+            InstanceName    = 'DSCSQLTEST'
 
             Role1Name       = 'DscServerRole1'
             Role2Name       = 'DscServerRole2'

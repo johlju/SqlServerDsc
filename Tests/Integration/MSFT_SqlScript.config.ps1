@@ -4,7 +4,7 @@ $ConfigurationData = @{
             NodeName          = 'localhost'
 
             ServerName        = $env:COMPUTERNAME
-            InstanceName      = 'DSCSQL2016'
+            InstanceName      = 'DSCSQLTEST'
 
             Database1Name     = 'ScriptDatabase1'
             Database2Name     = 'ScriptDatabase2'

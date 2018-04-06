@@ -4,7 +4,7 @@ $ConfigurationData = @{
             NodeName                  = 'localhost'
             ServerName                = $env:COMPUTERNAME
             DefaultInstanceName       = 'MSSQLSERVER'
-            NamedInstanceName         = 'DSCSQL2016'
+            NamedInstanceName         = 'DSCSQLTEST'
 
             ServiceTypeDatabaseEngine = 'DatabaseEngine'
             ServiceTypeSqlServerAgent = 'SqlServerAgent'
