@@ -253,12 +253,12 @@ try
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlAgentServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.AgtSvcStartupType          | Should -Be 'Automatic'
                 $resourceCurrentState.ASServerMode               | Should -Be $mockAnalysisServicesMultiServerMode
-                $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Backup")
+                $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockDatabaseEngineNamedInstanceName\OLAP\Backup")
                 $resourceCurrentState.ASCollation                | Should -Be $mockCollation
-                $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Config")
-                $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Data")
-                $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Log")
-                $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockDatabaseEngineNamedInstanceName\OLAP\Temp")
+                $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockDatabaseEngineNamedInstanceName\OLAP\Config")
+                $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockDatabaseEngineNamedInstanceName\OLAP\Data")
+                $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockDatabaseEngineNamedInstanceName\OLAP\Log")
+                $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockDatabaseEngineNamedInstanceName\OLAP\Temp")
                 $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
                 $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.AsSvcStartupType           | Should -Be 'Automatic'
@@ -277,7 +277,7 @@ try
                 $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
                 $resourceCurrentState.InstallSharedDir           | Should -Be $mockInstallSharedDir
                 $resourceCurrentState.InstallSharedWOWDir        | Should -Be $mockInstallSharedWOWDir
-                $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL")
+                $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL14.$mockDatabaseEngineNamedInstanceName\MSSQL")
                 $resourceCurrentState.InstanceDir                | Should -Be $mockInstallSharedDir
                 $resourceCurrentState.InstanceID                 | Should -Be $mockDatabaseEngineNamedInstanceName
                 $resourceCurrentState.InstanceName               | Should -Be $mockDatabaseEngineNamedInstanceName
@@ -291,7 +291,7 @@ try
                 $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
                 $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
                 $resourceCurrentState.SourcePath                 | Should -Be "$($mockIsoMediaDriveLetter):\"
-                $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\Backup")
+                $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL14.$mockDatabaseEngineNamedInstanceName\MSSQL\Backup")
                 $resourceCurrentState.SQLCollation               | Should -Be $mockCollation
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
@@ -307,8 +307,8 @@ try
                 )
                 $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
-                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
-                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL14.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL14.$mockDatabaseEngineNamedInstanceName\MSSQL\DATA\")
                 $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
@@ -433,7 +433,7 @@ try
                 $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
                 $resourceCurrentState.InstallSharedDir           | Should -Be $mockInstallSharedDir
                 $resourceCurrentState.InstallSharedWOWDir        | Should -Be $mockInstallSharedWOWDir
-                $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineDefaultInstanceName\MSSQL")
+                $resourceCurrentState.InstallSQLDataDir          | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL14.$mockDatabaseEngineDefaultInstanceName\MSSQL")
                 $resourceCurrentState.InstanceDir                | Should -Be $mockInstallSharedDir
                 $resourceCurrentState.InstanceID                 | Should -Be $mockDatabaseEngineDefaultInstanceName
                 $resourceCurrentState.InstanceName               | Should -Be $mockDatabaseEngineDefaultInstanceName
@@ -447,7 +447,7 @@ try
                 $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
                 $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
                 $resourceCurrentState.SourcePath                 | Should -Be "$($mockIsoMediaDriveLetter):\"
-                $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineDefaultInstanceName\MSSQL\Backup")
+                $resourceCurrentState.SQLBackupDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL14.$mockDatabaseEngineDefaultInstanceName\MSSQL\Backup")
                 $resourceCurrentState.SQLCollation               | Should -Be $mockCollation
                 $resourceCurrentState.SQLSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLSvcAccountUsername      | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
@@ -462,8 +462,8 @@ try
                 )
                 $resourceCurrentState.SQLTempDBDir               | Should -BeNullOrEmpty
                 $resourceCurrentState.SQLTempDBLogDir            | Should -BeNullOrEmpty
-                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineDefaultInstanceName\MSSQL\DATA\")
-                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL13.$mockDatabaseEngineDefaultInstanceName\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBDir               | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL14.$mockDatabaseEngineDefaultInstanceName\MSSQL\DATA\")
+                $resourceCurrentState.SQLUserDBLogDir            | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSSQL14.$mockDatabaseEngineDefaultInstanceName\MSSQL\DATA\")
                 $resourceCurrentState.SQMReporting               | Should -BeNullOrEmpty
                 $resourceCurrentState.SuppressReboot             | Should -BeNullOrEmpty
                 $resourceCurrentState.UpdateEnabled              | Should -BeNullOrEmpty
@@ -567,12 +567,12 @@ try
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -BeNullOrEmpty
                 $resourceCurrentState.ASServerMode               | Should -Be $mockAnalysisServicesTabularServerMode
-                $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockAnalysisServicesTabularInstanceName\OLAP\Backup")
+                $resourceCurrentState.ASBackupDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockAnalysisServicesTabularInstanceName\OLAP\Backup")
                 $resourceCurrentState.ASCollation                | Should -Be $mockCollation
-                $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockAnalysisServicesTabularInstanceName\OLAP\Config")
-                $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockAnalysisServicesTabularInstanceName\OLAP\Data")
-                $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockAnalysisServicesTabularInstanceName\OLAP\Log")
-                $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS13.$mockAnalysisServicesTabularInstanceName\OLAP\Temp")
+                $resourceCurrentState.ASConfigDir                | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockAnalysisServicesTabularInstanceName\OLAP\Config")
+                $resourceCurrentState.ASDataDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockAnalysisServicesTabularInstanceName\OLAP\Data")
+                $resourceCurrentState.ASLogDir                   | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockAnalysisServicesTabularInstanceName\OLAP\Log")
+                $resourceCurrentState.ASTempDir                  | Should -Be (Join-Path -Path $mockInstallSharedDir -ChildPath "MSAS14.$mockAnalysisServicesTabularInstanceName\OLAP\Temp")
                 $resourceCurrentState.ASSvcAccount               | Should -BeNullOrEmpty
                 $resourceCurrentState.ASSvcAccountUsername       | Should -Be ('.\{0}' -f (Split-Path -Path $mockSqlServicePrimaryAccountUserName -Leaf))
                 $resourceCurrentState.ASSysAdminAccounts         | Should -Be @(
