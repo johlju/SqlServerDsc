@@ -42,7 +42,7 @@ $ConfigurationData = @{
             ForceReboot                           = $false
 
             # Properties for mounting media
-            ImagePath                             = "$env:TEMP\SQL2016.iso"
+            ImagePath                             = "$env:TEMP\SQL2017.iso"
             DriveLetter                           = $mockIsoMediaDriveLetter
 
             CertificateFile                       = $env:DscPublicCertificatePath
