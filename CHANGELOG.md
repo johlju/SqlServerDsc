@@ -8,7 +8,6 @@
   - Opt-in for common test "Common Tests - Validate Markdown Links".
   - Updated broken links in `\README.md` and in `\Examples\README.md`
   - Opt-in for common test 'Common Tests - Relative Path Length'.
-  - Integration test is using SQL Server 2017 ([issue #858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
 - Changes to SqlAg, SqlAGDatabase, and SqlAGReplica examples
   - Included configuration for SqlAlwaysOnService to enable
     HADR on each node to avoid confusion
@@ -21,6 +20,14 @@
     [Dan Reist (@randomnote1)](https://github.com/randomnote1)
   - Use a string builder to build the function stubs.
   - Fixed formatting issues for the function to work with modules other than SqlServer.
+- Changes to SqlSetup
+  - Integration test is using SQL Server 2017 ([issue #858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
+  - Localized messages for Master Data Services no longer start and end with
+    single quote.
+  - When installing features a verbose message is written if a feature is found
+    to already be installed. It no longer quietly removes the feature from the
+    `/FEATURES` argument.
+  - Cleaned up a bit in the tests, removed excessive piping.
 
 ## 12.0.0.0
 
