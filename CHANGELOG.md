@@ -29,6 +29,9 @@
     `/FEATURES` argument.
   - Cleaned up a bit in the tests, removed excessive piping.
   - Fixed minor typo in examples.
+  - Changes to integration tests
+    - CONN feature was temporarily removed from the instances installed by the
+      integration tests. This is due to issue #1105.
 
 ## 12.0.0.0
 
