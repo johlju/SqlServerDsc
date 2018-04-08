@@ -28,6 +28,7 @@
     to already be installed. It no longer quietly removes the feature from the
     `/FEATURES` argument.
   - Cleaned up a bit in the tests, removed excessive piping.
+  - Fixed minor typo in examples.
 
 ## 12.0.0.0
 
