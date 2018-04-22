@@ -31,6 +31,9 @@
     the integration test. This is to save memory on the AppVeyor build worker.
   - The helper function `Restart-ReportingServicesService` should no longer timeout
     when restarting the service (issue #1114).
+- Changes to SqlServiceAccount
+  - Updated the integration tests to stop some services after each integration test.
+    This is to save memory on the AppVeyor build worker.
 
 ## 11.1.0.0
 
