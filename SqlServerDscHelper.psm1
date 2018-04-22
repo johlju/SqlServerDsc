@@ -936,7 +936,10 @@ function Restart-ReportingServicesService
     }
 
     Write-Verbose -Message ($script:localizedData.RestartService -f 'Reporting Services') -Verbose
-    $reportingServicesService | Restart-Service -Force
+    $reportingServicesService | Stop-Service -Force
+
+    Start-Sleep -Seconds 60
+    $reportingServicesService | Start-Service
 
     # Start dependent services
     $dependentService | ForEach-Object {
