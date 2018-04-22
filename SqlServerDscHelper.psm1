@@ -950,6 +950,7 @@ function Restart-ReportingServicesService
 
     if ($WaitTime -ne 0)
     {
+        Write-Verbose -Message ($script:localizedData.WaitServiceRestart -f $WaitTime, $reportingServicesService.DisplayName) -Verbose
         Start-Sleep -Seconds $WaitTime
     }
 
