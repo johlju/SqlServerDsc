@@ -3,11 +3,44 @@
 #---------------------------------#
 version: 9.0.{build}.0
 image: Visual Studio 2017
+configuration:
+    - CORE
+    - WMF
 install:
+    - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
     - git clone https://github.com/PowerShell/DscResource.Tests
-    - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
-    - ps: Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
-    - ps: Invoke-AppveyorInstallTask
+    - ps: |
+        # Download and install latest PowerShell Core version.
+        $msiPath = "$env:TEMP\PowerShellCore.msi"
+        (New-Object Net.WebClient).DownloadFile('https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/PowerShell-6.0.2-win-x64.msi', $msiPath)
+        Write-Verbose 'Installing PowerShell Core' -Verbose
+        Start-Process 'msiexec.exe' -Wait -ArgumentList "/i $msiPath /quiet"
+        Remove-Item $msiPath
+        # Must add this path $env:Path so that 'pwsh:' finds 'pwsh'.
+        $env:Path = "$env:ProgramFiles\PowerShell\6.0.2;$env:Path"
+    - pwsh: |
+        Write-Verbose -Message "PowerShell Core v$($PSVersionTable.PSVersion)" -Verbose
+        if ($PSVersionTable.PSVersion -lt [Version] '6.0.2')
+        {
+            throw 'Wrong PowerShell Core version installed.'
+        }
+    - ps: |
+        Write-Verbose -Message "Windows PowerShell v$($PSVersionTable.PSVersion)" -Verbose
+        if ($PSVersionTable.PSVersion -lt [Version] '5.1')
+        {
+            throw 'WMF 5.1 needed'
+        }
+    - ps: |
+        Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
+        # Installs Nuget Package Provider and Pester for Windows PowerShell
+        # Nuget Package Provider can only be installed on WMF.
+        Invoke-AppveyorInstallTask
+    - pwsh: |
+        Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
+        # Installs Pester in PowerShell Core.
+        # This function will ignore installing Package Provider when
+        # edition is CORE (see above).
+        Invoke-AppveyorInstallTask
 
 #---------------------------------#
 #      build configuration        #
@@ -19,8 +52,26 @@ build: false
 #      test configuration         #
 #---------------------------------#
 
-test_script:
+for:
+-
+  matrix:
+    only:
+      - configuration: CORE
+
+  test_script:
+    - pwsh: |
+        Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
+        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @()
+
+-
+  matrix:
+    only:
+      - configuration: WMF
+
+  test_script:
     - ps: |
+        Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
+
         # Workaround for issue #239 and issue #774.
         Write-Verbose -Message '--- WORKAROUND FOR ISSUE #239 AND ISSUE #774 ---' -Verbose
         $sqlModules = Get-Module -ListAvailable -Name 'sql*'
