@@ -38,7 +38,7 @@ function Get-TargetResource
         $ProtocolName
     )
 
-    $sql = Connect-SQL -SQLServer $ServerName -SQLInstanceName $InstanceName
+    Import-SQLPSModule
 
     $managedComputerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
 
