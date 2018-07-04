@@ -139,8 +139,29 @@ InModuleScope $script:moduleName {
                         InstanceName = ''
                         ServiceName = 'MSSQLSERVER'
                         Status = $mockDynamicStatus
+                        IsClustered = $false
                     }
                 } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'MSSQLSERVER' }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return @{
+                        Name = 'NOCLUSTERCHECK'
+                        InstanceName = 'NOCLUSTERCHECK'
+                        ServiceName = 'NOCLUSTERCHECK'
+                        Status = $mockDynamicStatus
+                        IsClustered = $true
+                    }
+                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCLUSTERCHECK' }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return @{
+                        Name = 'NOCONNECT'
+                        InstanceName = 'NOCONNECT'
+                        ServiceName = 'NOCONNECT'
+                        Status = $mockDynamicStatus
+                        IsClustered = $true
+                    }
+                } -Verifiable -ParameterFilter { $SQLInstanceName -eq 'NOCONNECT' }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return @{
@@ -176,7 +197,7 @@ InModuleScope $script:moduleName {
                             }
                         )
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (MSSQLSERVER)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQLSERVER' }
 
                 ## SQL instance with no installed SQL Agent Service
                 Mock -CommandName Get-Service -MockWith {
@@ -185,7 +206,25 @@ InModuleScope $script:moduleName {
                         DisplayName = 'Microsoft SQL Server (NOAGENT)'
                         DependentServices = @()
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (NOAGENT)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOAGENT' }
+
+                ## SQL instance with no installed SQL Agent Service
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = 'MSSQL$NOCLUSTERCHECK'
+                        DisplayName = 'Microsoft SQL Server (NOCLUSTERCHECK)'
+                        DependentServices = @()
+                    }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOCLUSTERCHECK' }
+
+                ## SQL instance with no installed SQL Agent Service
+                Mock -CommandName Get-Service -MockWith {
+                    return @{
+                        Name = 'MSSQL$NOCONNECT'
+                        DisplayName = 'Microsoft SQL Server (NOCONNECT)'
+                        DependentServices = @()
+                    }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$NOCONNECT' }
 
                 ## SQL instance with stopped SQL Agent Service
                 Mock -CommandName Get-Service -MockWith {
@@ -201,7 +240,7 @@ InModuleScope $script:moduleName {
                             }
                         )
                     }
-                } -Verifiable -ParameterFilter { $DisplayName -eq 'SQL Server (STOPPEDAGENT)' }
+                } -Verifiable -ParameterFilter { $Name -eq 'MSSQL$STOPPEDAGENT' }
 
                 Mock -CommandName Restart-Service -Verifiable
                 Mock -CommandName Start-Service -Verifiable
@@ -218,6 +257,30 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 1
+            }
+
+            It 'Should restart SQL Service, and not do cluster cluster check' {
+                Mock -CommandName Get-CimInstance
+
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOCLUSTERCHECK' -SkipClusterCheck } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 0
+            }
+
+            It 'Should restart SQL Service, and not do cluster cluster check or check online status' {
+                Mock -CommandName Get-CimInstance
+
+                { Restart-SqlService -SQLServer $env:ComputerName -SQLInstanceName 'NOCONNECT' -SkipClusterCheck -SkipWaitForOnline } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Get-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Restart-Service -Scope It -Exactly -Times 1
+                Assert-MockCalled -CommandName Connect-SQL -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Start-Service -Scope It -Exactly -Times 0
+                Assert-MockCalled -CommandName Get-CimInstance -Scope It -Exactly -Times 0
             }
 
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {

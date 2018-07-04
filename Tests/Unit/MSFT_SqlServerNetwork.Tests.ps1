@@ -99,7 +99,7 @@ try
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 
-                Mock -CommandName Connect-Sql
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable
@@ -137,7 +137,7 @@ try
             BeforeEach {
                 $testParameters = $mockDefaultParameters.Clone()
 
-                Mock -CommandName Connect-Sql
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable
@@ -303,7 +303,7 @@ try
                 $testParameters = $mockDefaultParameters.Clone()
 
                 Mock -CommandName Restart-SqlService -Verifiable
-                Mock -CommandName Connect-Sql
+                Mock -CommandName Import-SQLPSModule
                 Mock -CommandName New-Object `
                     -MockWith $mockFunction_NewObject_ManagedComputer `
                     -ParameterFilter $mockFunction_NewObject_ManagedComputer_ParameterFilter -Verifiable
