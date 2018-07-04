@@ -39,7 +39,8 @@ try
     . $configFile
 
     $mockProtocolName = $ConfigurationData.AllNodes.ProtocolName
-    $mockIsEnabled = $ConfigurationData.AllNodes.IsEnabled
+    $mockEnabled = $ConfigurationData.AllNodes.Enabled
+    $mockDisabled = $ConfigurationData.AllNodes.Disabled
     $mockTcpDynamicPort = $ConfigurationData.AllNodes.TcpDynamicPort
 
     Describe "$($script:DSCResourceName)_Integration" {
@@ -47,7 +48,7 @@ try
             $resourceId = "[$($script:DSCResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:DSCResourceName)_SetTcpDynamicPort_Config"
+        $configurationName = "$($script:DSCResourceName)_SetDisabled_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -87,7 +88,53 @@ try
                     $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.IsEnabled | Should -Be $mockIsEnabled
+                $resourceCurrentState.IsEnabled | Should -Be $mockDisabled
+                $resourceCurrentState.ProtocolName | Should -Be $mockProtocolName
+                $resourceCurrentState.TcpDynamicPort | Should -Be $mockTcpDynamicPort
+            }
+        }
+
+        $configurationName = "$($script:DSCResourceName)_SetEnabled_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        SqlInstallCredential = $mockSqlInstallCredential
+                        OutputPath           = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName
+                } | Where-Object -FilterScript {
+                    $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.IsEnabled | Should -Be $mockEnabled
                 $resourceCurrentState.ProtocolName | Should -Be $mockProtocolName
                 $resourceCurrentState.TcpDynamicPort | Should -Be $mockTcpDynamicPort
             }
