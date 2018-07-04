@@ -16,7 +16,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration MSFT_SqlServerNetwork_SetEnabled_Config
+Configuration MSFT_SqlServerNetwork_SetDisabled_Config
 {
     param
     (
