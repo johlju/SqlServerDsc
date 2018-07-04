@@ -3,7 +3,7 @@
 param()
 
 $script:DSCModuleName = 'SqlServerDsc'
-$script:DSCResourceFriendlyName = 'SqlServerDatabaseMail'
+$script:DSCResourceFriendlyName = 'SqlServerNetwork'
 $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 if (-not $env:APPVEYOR -eq $true)
