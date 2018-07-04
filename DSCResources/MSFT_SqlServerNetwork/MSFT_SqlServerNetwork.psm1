@@ -218,7 +218,20 @@ function Set-TargetResource
 
     if ($RestartService -and $isRestartNeeded)
     {
-        Restart-SqlService -SQLServer $ServerName -SQLInstanceName $InstanceName -Timeout $RestartTimeout
+        $restartSqlServiceParameters = @{
+            SQLServer = $ServerName
+            SQLInstanceName = $InstanceName
+            Timeout = $RestartTimeout
+            SkipClusterCheck = $true
+        }
+
+        if ($PSBoundParameters.ContainsKey('IsEnabled') -and $IsEnabled -eq $false)
+        {
+            # If the protocol is disabled it is not possible to connect to the instance.
+            $restartSqlServiceParameters['SkipWaitForOnline'] = $true
+        }
+
+        Restart-SqlService @restartSqlServiceParameters
     }
 }
 
