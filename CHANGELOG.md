@@ -27,11 +27,14 @@
   - When installing features a verbose message is written if a feature is found
     to already be installed. It no longer quietly removes the feature from the
     `/FEATURES` argument.
+  - Cleaned up a bit in the tests, removed excessive piping.
   - Fixed minor typo in examples.
+  - Changes to integration tests
+    - CONN feature was temporarily removed from the instances installed by the
+      integration tests. This is due to issue #1105.
   - For SQL Server 2017 when installing feature CONN, and CONN already exist, the
     feature CONN was no longer detected. Now CONN is forcibly installed even if
     it already is installed ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
-  - Cleaned up a bit in the tests, removed excessive piping.
 
 ## 12.0.0.0
 
