@@ -30,7 +30,7 @@ else
                     issue #1105. Regression test depends on AppVeyor already
                     has CONN installed in an already present instance.
                 #>
-                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,BC,SDK'
+                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,CONN,BC,SDK'
                 AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
                 <#
@@ -47,7 +47,7 @@ else
                     issue #1105. Regression test depends on AppVeyor already
                     has CONN installed in an already present instance.
                 #>
-                AnalysisServicesTabularFeatures         = 'AS,BC,SDK'
+                AnalysisServicesTabularFeatures         = 'AS,CONN,BC,SDK'
                 AnalysisServicesTabularServerMode       = 'TABULAR'
 
                 <#
@@ -64,7 +64,7 @@ else
                     issue #1105. Regression test depends on AppVeyor already
                     has CONN installed in an already present instance.
                 #>
-                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,BC,SDK'
+                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,CONN,BC,SDK'
 
                 # General SqlSetup properties
                 Collation                               = 'Finnish_Swedish_CI_AS'
