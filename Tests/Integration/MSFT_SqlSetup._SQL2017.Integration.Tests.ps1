@@ -82,7 +82,7 @@ $sqlModulePath | ForEach-Object -Process {
 # Using try/finally to always cleanup.
 try
 {
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_SQL2017.config.ps1"
     . $configFile
 
     $mockSourceMediaUrl = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'
