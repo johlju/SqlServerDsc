@@ -337,7 +337,7 @@ function Test-SkipContinuousIntegrationTask
 
     if ($env:APPVEYOR -eq $true -and $env:CONFIGURATION -notin $Category)
     {
-        Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, ($Category -join ''',''')) -Verbose
+        Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, ($Category -join ''', or ''')) -Verbose
         $result = $true
     }
 
