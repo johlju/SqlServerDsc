@@ -36,7 +36,7 @@ else
 
                 <#
                     Analysis Services Tabular properties.
-                    The features CONN,BC,SDK is installed with the DSCSQL2016 so those
+                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
                     features will found for DSCTABULAR instance as well.
                     The features is added here so the same property can be used to
                     evaluate the result in the test.
@@ -54,7 +54,7 @@ else
 
                 <#
                     Database Engine default instance properties.
-                    The features CONN,BC,SDK is installed with the DSCSQL2016 so those
+                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
                     features will found for DSCTABULAR instance as well.
                     The features is added here so the same property can be used to
                     evaluate the result in the test.
