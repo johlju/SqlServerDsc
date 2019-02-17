@@ -1084,7 +1084,7 @@ function Set-TargetResource
         }
         else
         {
-            Write-Verbose -Message ($script:localizedData.FeatureAlreadyInstalled -f $featuresToInstall)
+            Write-Verbose -Message ($script:localizedData.FeatureAlreadyInstalled -f $feature)
         }
     }
 
