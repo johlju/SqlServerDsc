@@ -3043,7 +3043,7 @@ try
                 }
             }
 
-            foreach ($mockSqlMajorVersion in $testProductVersion )
+            foreach ($mockSqlMajorVersion in $testProductVersion)
             {
                 $mockDefaultInstance_InstanceId = "$($mockSqlDatabaseEngineName)$($mockSqlMajorVersion).$($mockDefaultInstance_InstanceName)"
 
@@ -3140,9 +3140,9 @@ try
                         Mock -CommandName Get-CimInstance -MockWith $mockEmptyHashtable -Verifiable
                     }
 
-                    It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    It 'Should install the correct features' {
                         $testParameters = $mockDefaultParameters.Clone()
-                        $testParameters['Features'] = 'SQLENGINE,CONN'
+                        $testParameters['Features'] = 'SQLENGINE'
                         $testParameters += @{
                             InstanceName = $mockDefaultInstance_InstanceName
                             SourcePath = $mockSourcePath
@@ -3157,7 +3157,7 @@ try
                                 SQL Server 2017 version, CONN is forcibly added
                                 to the setup Features argument.
                             #>
-                            $mockExpectedFeatures = $testParameters.Features
+                            $mockExpectedFeatures = $testParameters.Features, 'CONN' -join ','
                         }
                         else
                         {
@@ -3166,7 +3166,7 @@ try
                                 installed, so it is not added to the setup Features
                                 argument.
                             #>
-                            $mockExpectedFeatures = $testParameters.Features -replace ',CONN'
+                            $mockExpectedFeatures = $testParameters.Features
                         }
 
                         $mockStartSqlSetupProcessExpectedArgument = @{

@@ -199,14 +199,14 @@ function Get-TargetResource
 
             # Tempdb data files size
             $SqlTempdbFileSize = ($tempdbPrimaryFilegroup.Files.Size | Measure-Object -Average).Average / 1Kb
-            
+
             # Tempdb data files growth
             $SqlTempdbFileGrowth = ($tempdbPrimaryFilegroup.Files.Growth | Measure-Object -Average).Average / 1Kb
-            
+
             # Tempdb log file size
             $tempdbTempLog = ($databaseServer.Databases | Where-Object {$_.Name -eq 'tempdb'}).LogFiles | Where-Object {$_.Name -eq 'templog'}
             $SqlTempdbLogFileSize = $tempdbTempLog.Size / 1Kb
-            
+
             # Tempdb log file growth
             $SqlTempdbLogFileGrowth = $tempdbTempLog.Growth / 1Kb
         }
@@ -1082,8 +1082,7 @@ function Set-TargetResource
             Need to override 'CONN' on SQL Server 2017 if already installed.
             See issue #1105 for more information.
         #>
-        if (($feature -eq 'CONN' -and $sqlVersion -in ('14')) `
-            -or (-not ($getTargetResourceResult.Features.Contains($feature))))
+        if (-not ($getTargetResourceResult.Features.Contains($feature)))
         {
             $featuresToInstall += "$feature,"
         }
@@ -1091,6 +1090,16 @@ function Set-TargetResource
         {
             Write-Verbose -Message ($script:localizedData.FeatureAlreadyInstalled -f $featuresToInstall)
         }
+    }
+
+    <#
+        Need to override 'CONN' on SQL Server 2017 if already installed by an
+        already existing instance, otherwise CONN gets uninstalled.
+        See issue #1105 for more information.
+    #>
+    if ($sqlVersion -in ('14') -and ($getTargetResourceResult.Features.Contains('CONN')) -and $featuresToInstall -notmatch 'CONN,' )
+    {
+        $featuresToInstall += "CONN,"
     }
 
     $Features = $featuresToInstall.Trim(',')
@@ -1374,31 +1383,31 @@ function Set-TargetResource
                 'SQLBackupDir'
             )
         }
-        
+
         # tempdb : define SqlTempdbFileCount
         if($PSBoundParameters.ContainsKey('SqlTempdbFileCount'))
         {
             $setupArguments += @{ SqlTempdbFileCount = $SqlTempdbFileCount }
         }
-        
+
         # tempdb : define SqlTempdbFileSize
         if($PSBoundParameters.ContainsKey('SqlTempdbFileSize'))
         {
             $setupArguments += @{ SqlTempdbFileSize = $SqlTempdbFileSize }
         }
-        
+
         # tempdb : define SqlTempdbFileGrowth
         if($PSBoundParameters.ContainsKey('SqlTempdbFileGrowth'))
         {
             $setupArguments += @{ SqlTempdbFileGrowth = $SqlTempdbFileGrowth }
         }
-        
+
         # tempdb : define SqlTempdbLogFileSize
         if($PSBoundParameters.ContainsKey('SqlTempdbLogFileSize'))
         {
             $setupArguments += @{ SqlTempdbLogFileSize = $SqlTempdbLogFileSize }
         }
-        
+
         # tempdb : define SqlTempdbLogFileGrowth
         if($PSBoundParameters.ContainsKey('SqlTempdbLogFileGrowth'))
         {

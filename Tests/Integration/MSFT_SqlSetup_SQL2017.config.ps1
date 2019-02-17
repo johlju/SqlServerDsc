@@ -26,10 +26,9 @@ else
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
 
                 <#
-                    CONN feature:
-                    Due to issue #1105 the feature CONN was removed.
-                    It cannot be used here if CONN is already installed
-                    in the AppVeyor build worker.
+                    CONN feature is not added her as a regression test for
+                    issue #1105. Regression test depends on AppVeyor already
+                    has CONN installed in an already present instance.
                 #>
                 DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,BC,SDK'
                 AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
@@ -44,10 +43,9 @@ else
                 AnalysisServicesTabularInstanceName     = 'DSCTABULAR'
 
                 <#
-                    CONN feature:
-                    Due to issue #1105 the feature CONN was removed.
-                    It cannot be used here if CONN is already installed
-                    in the AppVeyor build worker.
+                    CONN feature is not added her as a regression test for
+                    issue #1105. Regression test depends on AppVeyor already
+                    has CONN installed in an already present instance.
                 #>
                 AnalysisServicesTabularFeatures         = 'AS,BC,SDK'
                 AnalysisServicesTabularServerMode       = 'TABULAR'
@@ -62,10 +60,9 @@ else
                 DatabaseEngineDefaultInstanceName       = 'MSSQLSERVER'
 
                 <#
-                    CONN feature:
-                    Due to issue #1105 the feature CONN was removed.
-                    It cannot be used here if CONN is already installed
-                    in the AppVeyor build worker.
+                    CONN feature is not added her as a regression test for
+                    issue #1105. Regression test depends on AppVeyor already
+                    has CONN installed in an already present instance.
                 #>
                 DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,BC,SDK'
 
