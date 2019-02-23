@@ -1625,8 +1625,11 @@ Feature flags are used to toggle functionality on or off. One or more
 feature flags can be added to the parameter `FeatureFlag`, i.e.
 `FeatureFlag = @('DetectionSharedFeatures')`
 
-* **DetectionSharedFeatures**: A new way of detecting the shared features
-  is installed or not.
+<!-- markdownlint-disable MD013 -->
+Feature flag | Description
+--- | ---
+DetectionSharedFeatures | A new way of detecting if the shared features is installed or not. This was implemented because the previous implementation did not work fully with SQL Server 2017.
+<!-- markdownlint-enable MD013 -->
 
 #### Credentials for running the resource
 
