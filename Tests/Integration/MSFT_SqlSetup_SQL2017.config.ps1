@@ -24,12 +24,6 @@ else
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
-
-                <#
-                    CONN feature is not added her as a regression test for
-                    issue #1105. Regression test depends on AppVeyor already
-                    has CONN installed in an already present instance.
-                #>
                 DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,AS,CONN,BC,SDK'
                 AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
@@ -41,12 +35,6 @@ else
                     evaluate the result in the test.
                 #>
                 AnalysisServicesTabularInstanceName     = 'DSCTABULAR'
-
-                <#
-                    CONN feature is not added her as a regression test for
-                    issue #1105. Regression test depends on AppVeyor already
-                    has CONN installed in an already present instance.
-                #>
                 AnalysisServicesTabularFeatures         = 'AS,CONN,BC,SDK'
                 AnalysisServicesTabularServerMode       = 'TABULAR'
 
@@ -58,12 +46,6 @@ else
                     evaluate the result in the test.
                 #>
                 DatabaseEngineDefaultInstanceName       = 'MSSQLSERVER'
-
-                <#
-                    CONN feature is not added her as a regression test for
-                    issue #1105. Regression test depends on AppVeyor already
-                    has CONN installed in an already present instance.
-                #>
                 DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,CONN,BC,SDK'
 
                 # General SqlSetup properties
@@ -236,6 +218,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName           = $Node.DatabaseEngineNamedInstanceName
             Features               = $Node.DatabaseEngineNamedInstanceFeatures
             SourcePath             = "$($Node.DriveLetter):\"
@@ -333,6 +317,8 @@ Configuration MSFT_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName         = $Node.DatabaseEngineDefaultInstanceName
             Features             = $Node.DatabaseEngineDefaultInstanceFeatures
             SourcePath           = "$($Node.DriveLetter):\"
@@ -390,6 +376,8 @@ Configuration MSFT_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
+            FeatureFlag            = @('DetectionSharedFeatures')
+
             InstanceName        = $Node.AnalysisServicesTabularInstanceName
             Features            = $Node.AnalysisServicesTabularFeatures
             SourcePath          = "$($Node.DriveLetter):\"

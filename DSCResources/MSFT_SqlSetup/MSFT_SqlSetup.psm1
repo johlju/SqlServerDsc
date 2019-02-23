@@ -31,6 +31,10 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
 
     .PARAMETER FailoverClusterNetworkName
         Host name to be assigned to the clustered SQL Server instance.
+
+    .PARAMETER FeatureFlag
+        New functionality can be toggled on or off. See the documentation what
+        functionality exist that can be toggled on.
 #>
 function Get-TargetResource
 {
@@ -57,7 +61,11 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        $FailoverClusterNetworkName
+        $FailoverClusterNetworkName,
+
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag
     )
 
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster','Addnode'))
@@ -120,6 +128,12 @@ function Get-TargetResource
 
     Write-Verbose -Message $script:localizedData.EvaluateDatabaseEngineFeature
 
+    if ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures'))
+    {
+        $installedSharedFeatures = Get-InstalledSharedFeatures -InstanceName $InstanceName
+        $features += $installedSharedFeatures -join ','
+    }
+
     if ($services | Where-Object {$_.Name -eq $databaseServiceName})
     {
         Write-Verbose -Message $script:localizedData.DatabaseEngineFeatureFound
@@ -153,20 +167,23 @@ function Get-TargetResource
             Write-Verbose -Message $script:localizedData.ReplicationFeatureNotFound
         }
 
-        # Check if Data Quality Client sub component is configured
-        $dataQualityClientRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
-
-        Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
-
-        $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath).SQL_DQ_CLIENT_Full
-        if ($isDQCInstalled -eq 1)
+        if (-not $FeatureFlag -or -not $FeatureFlag.Contains('DetectionSharedFeatures'))
         {
-            Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
-            $features += 'DQC,'
-        }
-        else
-        {
-            Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
+            # Check if Data Quality Client sub component is configured
+            $dataQualityClientRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+
+            Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $dataQualityClientRegistryPath)
+
+            $isDQCInstalled = (Get-ItemProperty -Path $dataQualityClientRegistryPath).SQL_DQ_CLIENT_Full
+            if ($isDQCInstalled -eq 1)
+            {
+                Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
+                $features += 'DQC,'
+            }
+            else
+            {
+                Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
+            }
         }
 
         # Check if Data Quality Services sub component is configured
@@ -362,71 +379,74 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureNotFound
     }
 
-    # Check if Documentation Components "BOL" is configured
-    $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+    if (-not $FeatureFlag -or -not $FeatureFlag.Contains('DetectionSharedFeatures'))
+    {
+        # Check if Documentation Components "BOL" is configured
+        $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
 
-    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $documentationComponentsRegistryPath)
+        Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $documentationComponentsRegistryPath)
 
-    $isBOLInstalled = (Get-ItemProperty -Path $documentationComponentsRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
-    if ($isBOLInstalled -eq 1)
-    {
-        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureFound
-        $features += 'BOL,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureNotFound
-    }
+        $isBOLInstalled = (Get-ItemProperty -Path $documentationComponentsRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
+        if ($isBOLInstalled -eq 1)
+        {
+            Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureFound
+            $features += 'BOL,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureNotFound
+        }
 
-    $clientComponentsFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\Tools\Setup\Client_Components_Full"
-    $registryClientComponentsFullFeatureList = (Get-ItemProperty -Path $clientComponentsFullRegistryPath -ErrorAction SilentlyContinue).FeatureList
+        $clientComponentsFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\Tools\Setup\Client_Components_Full"
+        $registryClientComponentsFullFeatureList = (Get-ItemProperty -Path $clientComponentsFullRegistryPath -ErrorAction SilentlyContinue).FeatureList
 
-    Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityToolsFeature -f $clientComponentsFullRegistryPath)
+        Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityToolsFeature -f $clientComponentsFullRegistryPath)
 
-    if ($registryClientComponentsFullFeatureList -like '*Connectivity_FNS=3*')
-    {
-        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureFound
-        $features += 'CONN,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureNotFound
-    }
+        if ($registryClientComponentsFullFeatureList -like '*Connectivity_FNS=3*')
+        {
+            Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureFound
+            $features += 'CONN,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureNotFound
+        }
 
-    Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityBackwardsCompatibilityToolsFeature -f $clientComponentsFullRegistryPath)
-    if ($registryClientComponentsFullFeatureList -like '*Tools_Legacy_FNS=3*')
-    {
-        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureFound
-        $features += 'BC,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound
-    }
+        Write-Verbose -Message ($script:localizedData.EvaluateClientConnectivityBackwardsCompatibilityToolsFeature -f $clientComponentsFullRegistryPath)
+        if ($registryClientComponentsFullFeatureList -like '*Tools_Legacy_FNS=3*')
+        {
+            Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureFound
+            $features += 'BC,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound
+        }
 
-    Write-Verbose -Message ($script:localizedData.EvaluateClientToolsSdkFeature -f $clientComponentsFullRegistryPath)
-    if (($registryClientComponentsFullFeatureList -like '*SDK_Full=3*') -and ($registryClientComponentsFullFeatureList -like '*SDK_FNS=3*'))
-    {
-        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureFound
-        $features += 'SDK,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
-    }
+        Write-Verbose -Message ($script:localizedData.EvaluateClientToolsSdkFeature -f $clientComponentsFullRegistryPath)
+        if (($registryClientComponentsFullFeatureList -like '*SDK_Full=3*') -and ($registryClientComponentsFullFeatureList -like '*SDK_FNS=3*'))
+        {
+            Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureFound
+            $features += 'SDK,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
+        }
 
-    # Check if MDS sub component is configured for this server
-    $masterDataServicesFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
-    Write-Verbose -Message ($script:localizedData.EvaluateMasterDataServicesFeature -f $masterDataServicesFullRegistryPath)
-    $isMDSInstalled = (Get-ItemProperty -Path $masterDataServicesFullRegistryPath -ErrorAction SilentlyContinue).MDSCoreFeature
-    if ($isMDSInstalled -eq 1)
-    {
-        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureFound
-        $features += 'MDS,'
-    }
-    else
-    {
-        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
+        # Check if MDS sub component is configured for this server
+        $masterDataServicesFullRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+        Write-Verbose -Message ($script:localizedData.EvaluateMasterDataServicesFeature -f $masterDataServicesFullRegistryPath)
+        $isMDSInstalled = (Get-ItemProperty -Path $masterDataServicesFullRegistryPath -ErrorAction SilentlyContinue).MDSCoreFeature
+        if ($isMDSInstalled -eq 1)
+        {
+            Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureFound
+            $features += 'MDS,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
+        }
     }
 
     $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
@@ -733,6 +753,10 @@ function Get-TargetResource
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
+
+    .PARAMETER FeatureFlag
+        New functionality can be toggled on or off. See the documentation what
+        functionality exist that can be toggled on.
 #>
 function Set-TargetResource
 {
@@ -976,7 +1000,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.UInt32]
-        $SetupProcessTimeout = 7200
+        $SetupProcessTimeout = 7200,
+
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag
     )
 
     $getTargetResourceParameters = @{
@@ -985,6 +1013,7 @@ function Set-TargetResource
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
         FailoverClusterNetworkName = $FailoverClusterNetworkName
+        FeatureFlag = $FeatureFlag
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
@@ -1086,16 +1115,6 @@ function Set-TargetResource
         {
             Write-Verbose -Message ($script:localizedData.FeatureAlreadyInstalled -f $feature)
         }
-    }
-
-    <#
-        Need to override 'CONN' on SQL Server 2017 if already installed by an
-        already existing instance, otherwise CONN gets uninstalled.
-        See issue #1105 for more information.
-    #>
-    if ($sqlVersion -in ('14') -and ($getTargetResourceResult.Features.Contains('CONN')) -and $featuresToInstall -notmatch 'CONN,' )
-    {
-        $featuresToInstall += "CONN,"
     }
 
     $Features = $featuresToInstall.Trim(',')
@@ -1851,6 +1870,10 @@ function Set-TargetResource
 
     .PARAMETER SetupProcessTimeout
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
+
+    .PARAMETER FeatureFlag
+        New functionality can be toggled on or off. See the documentation what
+        functionality exist that can be toggled on.
 #>
 function Test-TargetResource
 {
@@ -2085,7 +2108,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.UInt32]
-        $SetupProcessTimeout = 7200
+        $SetupProcessTimeout = 7200,
+
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag
     )
 
     $getTargetResourceParameters = @{
@@ -2094,6 +2121,7 @@ function Test-TargetResource
         SourceCredential = $SourceCredential
         InstanceName = $InstanceName
         FailoverClusterNetworkName = $FailoverClusterNetworkName
+        FeatureFlag = $FeatureFlag
     }
 
     $boundParameters = $PSBoundParameters
@@ -2478,6 +2506,108 @@ function ConvertTo-StartupType
     }
 
     return $StartMode
+}
+
+function Get-InstalledSharedFeatures
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName
+    )
+
+    $sharedFeatures = @()
+
+    $configurationStateRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+
+    # Check if Data Quality Client sub component is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $configurationStateRegistryPath)
+
+    $isDQCInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).SQL_DQ_CLIENT_Full
+    if ($isDQCInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.DataQualityClientFeatureFound
+        $sharedFeatures += 'DQC'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
+    }
+
+    # Check if Documentation Components "BOL" is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $configurationStateRegistryPath)
+
+    $isBOLInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).SQL_BOL_Components
+    if ($isBOLInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureFound
+        $sharedFeatures += 'BOL'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.DocumentationComponentsFeatureNotFound
+    }
+
+    # Check if Client Tools Connectivity (and SQL Client Connectivity SDK) "CONN" is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $configurationStateRegistryPath)
+
+    $isConnInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).Connectivity_Full
+    if ($isConnInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureFound
+        $sharedFeatures += 'CONN'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.ClientConnectivityToolsFeatureNotFound
+    }
+
+    # Check if Client Tools Backwards Compatibility "BC" is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $configurationStateRegistryPath)
+
+    $isBcInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).Tools_Legacy_Full
+    if ($isBcInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureFound
+        $sharedFeatures += 'BC'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.ClientConnectivityBackwardsCompatibilityToolsFeatureNotFound
+    }
+
+    # Check if Client Tools SDK "SDK" is configured
+    Write-Verbose -Message ($script:localizedData.EvaluateDocumentationComponentsFeature -f $configurationStateRegistryPath)
+
+    $isSdkInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).SDK_Full
+    if ($isSdkInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureFound
+        $sharedFeatures += 'SDK'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.ClientToolsSdkFeatureNotFound
+    }
+
+    # Check if MDS sub component is configured for this server
+    Write-Verbose -Message ($script:localizedData.EvaluateMasterDataServicesFeature -f $configurationStateRegistryPath)
+
+    $isMDSInstalled = (Get-ItemProperty -Path $configurationStateRegistryPath -ErrorAction SilentlyContinue).MDSCoreFeature
+    if ($isMDSInstalled -eq 1)
+    {
+        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureFound
+        $sharedFeatures += 'MDS'
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
+    }
+
+    return $sharedFeatures
 }
 
 Export-ModuleMember -Function *-TargetResource

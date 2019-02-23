@@ -1619,6 +1619,14 @@ cluster. This is a limitation of SQL Server. See article
 [You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
 SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
 
+#### Feature flags
+
+Functionality that can be toggled on or off.
+
+Feature flag | Description
+--- | ---
+DetectionSharedFeatures | A new way of detecting the shared features is installed or not.
+
 #### Credentials for running the resource
 
 ##### PsDscRunAsCredential
@@ -1758,6 +1766,9 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.
+* **`[String[]]` FeatureFlag** _(Write)_: New functionality can be
+  toggled on or off. See the documentation what functionality exist that
+  can be toggled on.
 
 #### Read-Only Properties from Get-TargetResource
 

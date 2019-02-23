@@ -15,12 +15,15 @@
     `/FEATURES` argument.
   - Cleaned up a bit in the tests, removed excessive piping.
   - Fixed minor typo in examples.
-  - Changes to integration tests
-    - CONN feature was temporarily removed from the instances installed by the
-      integration tests. This is due to issue #1105.
-  - For SQL Server 2017 when installing feature CONN, and CONN already exist, the
-    feature CONN was no longer detected. Now CONN is forcibly installed even if
-    it is already installed ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
+  - A new optional parameter `FeatureFlag` parameter was added to control
+    breaking changes. Functionality added under a feature flag can be
+    toggled on or off, and could be changed later to be the default.
+    This way we can also make more of the new functionalities the default
+    in the same breaking change release ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
+  - Added a new way of detecting if the shared feature CONN (Client Tools
+    Connectivity, and SQL Client Connectivity SDK) is installed or not.
+    The new functionality is used when the parameter `FeatureFlag` is set
+    to `'DetectionSharedFeatures'` ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
 
 ## 12.3.0.0
 
