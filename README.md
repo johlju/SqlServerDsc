@@ -1621,11 +1621,12 @@ SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/25472
 
 #### Feature flags
 
-Functionality that can be toggled on or off.
+Feature flags are used to toggle functionality on or off. One or more
+feature flags can be added to the parameter `FeatureFlag`, i.e.
+`FeatureFlag = @('DetectionSharedFeatures')`
 
-Feature flag | Description
---- | ---
-DetectionSharedFeatures | A new way of detecting the shared features is installed or not.
+* **DetectionSharedFeatures**: A new way of detecting the shared features
+  is installed or not.
 
 #### Credentials for running the resource
 

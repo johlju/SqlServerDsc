@@ -68,6 +68,11 @@ function Get-TargetResource
         $FeatureFlag
     )
 
+    if ($FeatureFlag)
+    {
+        Write-Verbose -Message ($script:localizedData.FeatureFlag -f ($FeatureFlag -join ''','''))
+    }
+
     if ($Action -in @('CompleteFailoverCluster','InstallFailoverCluster','Addnode'))
     {
         $sqlHostName = $FailoverClusterNetworkName
@@ -127,12 +132,6 @@ function Get-TargetResource
     $services = Get-Service
 
     Write-Verbose -Message $script:localizedData.EvaluateDatabaseEngineFeature
-
-    if ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures'))
-    {
-        $installedSharedFeatures = Get-InstalledSharedFeatures -InstanceName $InstanceName
-        $features += $installedSharedFeatures -join ','
-    }
 
     if ($services | Where-Object {$_.Name -eq $databaseServiceName})
     {
@@ -447,6 +446,12 @@ function Get-TargetResource
         {
             Write-Verbose -Message $script:localizedData.MasterDataServicesFeatureNotFound
         }
+    }
+
+    if ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures'))
+    {
+        $installedSharedFeatures = Get-InstalledSharedFeatures -InstanceName $InstanceName
+        $features += '{0},' -f ($installedSharedFeatures -join ',')
     }
 
     $registryUninstallPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
