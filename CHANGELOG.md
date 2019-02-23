@@ -7,7 +7,9 @@
     because the correct memory size was not being detected correctly on Azure VMs
     ([issue #914](https://github.com/PowerShell/SqlServerDsc/issues/914)).
 - Changes to SqlSetup
-  - Integration test is using SQL Server 2017 ([issue #858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
+  - Split integration tests into two jobs, one for running integration tests
+    for SQL Server 2016 and another for running integration test for
+    SQL Server 2017 ([issue #858](https://github.com/PowerShell/SqlServerDsc/issues/858)).
   - Localized messages for Master Data Services no longer start and end with
     single quote.
   - When installing features a verbose message is written if a feature is found
@@ -24,6 +26,9 @@
     Connectivity, and SQL Client Connectivity SDK) is installed or not.
     The new functionality is used when the parameter `FeatureFlag` is set
     to `'DetectionSharedFeatures'` ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
+  - Added a new helper function `Get-InstalledSharedFeatures` to move out
+    some of the code from the `Get-TargetResource` to make unit testing
+    easier and faster.
 
 ## 12.3.0.0
 

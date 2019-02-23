@@ -166,7 +166,23 @@ function Get-TargetResource
             Write-Verbose -Message $script:localizedData.ReplicationFeatureNotFound
         }
 
-        if (-not $FeatureFlag -or -not $FeatureFlag.Contains('DetectionSharedFeatures'))
+        # Check if Data Quality Services sub component is configured
+        $dataQualityServicesRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*"
+
+        Write-Verbose -Message ($script:localizedData.EvaluateDataQualityServicesFeature -f $dataQualityServicesRegistryPath)
+
+        $isDQInstalled = (Get-ItemProperty -Path $dataQualityServicesRegistryPath -ErrorAction SilentlyContinue)
+        if ($isDQInstalled)
+        {
+            Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureFound
+            $features += 'DQ,'
+        }
+        else
+        {
+            Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureNotFound
+        }
+
+        if (-not $FeatureFlag -or -not ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures')))
         {
             # Check if Data Quality Client sub component is configured
             $dataQualityClientRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
@@ -183,22 +199,6 @@ function Get-TargetResource
             {
                 Write-Verbose -Message $script:localizedData.DataQualityClientFeatureNotFound
             }
-        }
-
-        # Check if Data Quality Services sub component is configured
-        $dataQualityServicesRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\DQ\*"
-
-        Write-Verbose -Message ($script:localizedData.EvaluateDataQualityServicesFeature -f $dataQualityServicesRegistryPath)
-
-        $isDQInstalled = (Get-ItemProperty -Path $dataQualityServicesRegistryPath -ErrorAction SilentlyContinue)
-        if ($isDQInstalled)
-        {
-            Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureFound
-            $features += 'DQ,'
-        }
-        else
-        {
-            Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureNotFound
         }
 
         $instanceId = $fullInstanceId.Split('.')[1]
@@ -226,8 +226,6 @@ function Get-TargetResource
             # Tempdb log file growth
             $SqlTempdbLogFileGrowth = $tempdbTempLog.Growth / 1Kb
         }
-
-
 
         $sqlCollation = $databaseServer.Collation
 
@@ -378,7 +376,7 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureNotFound
     }
 
-    if (-not $FeatureFlag -or -not $FeatureFlag.Contains('DetectionSharedFeatures'))
+    if (-not $FeatureFlag -or -not ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures')))
     {
         # Check if Documentation Components "BOL" is configured
         $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
@@ -450,7 +448,7 @@ function Get-TargetResource
 
     if ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures'))
     {
-        $installedSharedFeatures = Get-InstalledSharedFeatures -InstanceName $InstanceName
+        $installedSharedFeatures = Get-InstalledSharedFeatures -SqlVersion $sqlVersion
         $features += '{0},' -f ($installedSharedFeatures -join ',')
     }
 
@@ -2520,13 +2518,13 @@ function Get-InstalledSharedFeatures
     param
     (
         [Parameter(Mandatory = $true)]
-        [System.String]
-        $InstanceName
+        [System.Int32]
+        $SqlVersion
     )
 
     $sharedFeatures = @()
 
-    $configurationStateRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
+    $configurationStateRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($SqlVersion)0\ConfigurationState"
 
     # Check if Data Quality Client sub component is configured
     Write-Verbose -Message ($script:localizedData.EvaluateDataQualityClientFeature -f $configurationStateRegistryPath)
