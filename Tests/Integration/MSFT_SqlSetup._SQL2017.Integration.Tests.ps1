@@ -72,7 +72,7 @@ function Show-SqlBootstrapLog
     here we rename back the folder to the correct name. Only the version need
     for our tests are renamed.
 #>
-$sqlModulePath = Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\*.old'
+$sqlModulePath = Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft SQL Server\140\Tools\PowerShell\*.old'
 $sqlModulePath | ForEach-Object -Process {
     $newFolderName = (Split-Path -Path $_ -Leaf) -replace '\.old'
     Write-Verbose ('Renaming ''{0}'' to ''..\{1}''' -f $_, $newFolderName) -Verbose
