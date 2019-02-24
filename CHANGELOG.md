@@ -23,9 +23,10 @@
     This way we can also make more of the new functionalities the default
     in the same breaking change release ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
   - Added a new way of detecting if the shared feature CONN (Client Tools
-    Connectivity, and SQL Client Connectivity SDK) is installed or not.
-    The new functionality is used when the parameter `FeatureFlag` is set
-    to `'DetectionSharedFeatures'` ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
+    Connectivity, and SQL Client Connectivity SDK), BC (Client Tools
+    Backwards Compatibility), and SDK (Client Tools SDK) is installed or
+    not. The new functionality is used when the parameter `FeatureFlag`
+    is set to `'DetectionSharedFeatures'` ([issue #1105](https://github.com/PowerShell/SqlServerDsc/issues/1105)).
   - Added a new helper function `Get-InstalledSharedFeatures` to move out
     some of the code from the `Get-TargetResource` to make unit testing
     easier and faster.
