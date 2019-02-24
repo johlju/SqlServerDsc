@@ -33,8 +33,9 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SqlSetup'
         Host name to be assigned to the clustered SQL Server instance.
 
     .PARAMETER FeatureFlag
-        New functionality can be toggled on or off. See the documentation what
-        functionality exist that can be toggled on.
+        Feature flags are used to toggle functionality on or off. See the
+        documentation for what additional functionality exist through a feature
+        flag.
 #>
 function Get-TargetResource
 {
@@ -182,7 +183,7 @@ function Get-TargetResource
             Write-Verbose -Message $script:localizedData.DataQualityServicesFeatureNotFound
         }
 
-        if (-not $FeatureFlag -or -not ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures')))
+        if (-not (Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
         {
             # Check if Data Quality Client sub component is configured
             $dataQualityClientRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
@@ -376,7 +377,7 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureNotFound
     }
 
-    if (-not $FeatureFlag -or -not ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures')))
+    if (-not (Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
     {
         # Check if Documentation Components "BOL" is configured
         $documentationComponentsRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$($sqlVersion)0\ConfigurationState"
@@ -446,7 +447,7 @@ function Get-TargetResource
         }
     }
 
-    if ($FeatureFlag -and $FeatureFlag.Contains('DetectionSharedFeatures'))
+    if ((Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'DetectionSharedFeatures'))
     {
         $installedSharedFeatures = Get-InstalledSharedFeatures -SqlVersion $sqlVersion
         $features += '{0},' -f ($installedSharedFeatures -join ',')
@@ -758,8 +759,9 @@ function Get-TargetResource
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
 
     .PARAMETER FeatureFlag
-        New functionality can be toggled on or off. See the documentation what
-        functionality exist that can be toggled on.
+        Feature flags are used to toggle functionality on or off. See the
+        documentation for what additional functionality exist through a feature
+        flag.
 #>
 function Set-TargetResource
 {
@@ -1875,8 +1877,9 @@ function Set-TargetResource
         The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time, and error will be thrown.
 
     .PARAMETER FeatureFlag
-        New functionality can be toggled on or off. See the documentation what
-        functionality exist that can be toggled on.
+        Feature flags are used to toggle functionality on or off. See the
+        documentation for what additional functionality exist through a feature
+        flag.
 #>
 function Test-TargetResource
 {
@@ -2511,6 +2514,13 @@ function ConvertTo-StartupType
     return $StartMode
 }
 
+<#
+    .SYNOPSIS
+        Returns an array of installed shared features.
+
+    .PARAMETER SqlVersion
+        The major version of the SQL Server instance, i.e. 12, 13, or 14.
+#>
 function Get-InstalledSharedFeatures
 {
     [CmdletBinding()]
@@ -2611,6 +2621,36 @@ function Get-InstalledSharedFeatures
     }
 
     return $sharedFeatures
+}
+
+<#
+    .SYNOPSIS
+        Test if the specific feature flag should be enabled.
+
+    .PARAMETER FeatureFlag
+        An array of feature flags that should be compared against.
+
+    .PARAMETER TestFlag
+        The feature flag that is being check if it should be enabled.
+#>
+function Test-FeatureFlag
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $TestFlag
+    )
+
+    $flagEnabled = $FeatureFlag -and ($FeatureFlag -and $FeatureFlag.Contains($TestFlag))
+
+    return $flagEnabled
 }
 
 Export-ModuleMember -Function *-TargetResource

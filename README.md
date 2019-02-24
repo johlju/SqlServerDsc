@@ -1770,9 +1770,9 @@ need a '*SVCPASSWORD' argument in the setup arguments.
 * **`[UInt32]` SetupProcessTimeout** _(Write)_: The timeout, in seconds, to wait
   for the setup process to finish. Default value is 7200 seconds (2 hours). If
   the setup process does not finish before this time, and error will be thrown.
-* **`[String[]]` FeatureFlag** _(Write)_: New functionality can be
-  toggled on or off. See the documentation what functionality exist that
-  can be toggled on.
+* **`[String[]]` FeatureFlag** _(Write)_: Feature flags are used to toggle
+  functionality on or off. See the documentation for what additional
+  functionality exist through a feature flag.
 
 #### Read-Only Properties from Get-TargetResource
 
