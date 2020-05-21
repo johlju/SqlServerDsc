@@ -165,39 +165,29 @@ function GetBuildInfo {
 
     if ((-not $BuildInfo.SourcePath) -and $ParameterValues["SourcePath"] -notmatch '\.psd1') {
         # Find a module manifest (or maybe several)
-        Write-Verbose ('BuildManifestParent: {0}' -f ($BuildManifestParent| out-string)) -Verbose
-
-        $ModuleInfo = Get-ChildItem $BuildManifestParent -Recurse -Filter *.psd1 -ErrorAction SilentlyContinue |
+        $ModuleInfo = Get-ChildItem -Path $ParameterValues["SourcePath"] -Filter *.psd1 -ErrorAction 'SilentlyContinue' |
             ImportModuleManifest -ErrorAction SilentlyContinue
 
         Write-Verbose ('@(ModuleInfo).Count: {0}' -f (@($ModuleInfo).Count | out-string)) -Verbose
         Write-Verbose ('@(ModuleInfo).Name: {0}' -f (@($ModuleInfo).Name | out-string)) -Verbose
 
+        if (-Not $ModuleInfo) {
+            throw "Can't find a module manifest in $BuildManifestParent"
+        }
+
         # If we found more than one module info, the only way we have of picking just one is if it matches a folder name
         if (@($ModuleInfo).Count -gt 1) {
-            # Resolve Build Manifest's parent folder to find the Absolute path
-            $ModuleName = Split-Path -Leaf $BuildManifestParent
-            # If we're in a "well known" source folder, look higher for a name
-            if ($ModuleName -in 'Source', 'src') {
-                $ModuleName = Split-Path (Split-Path -Parent $BuildManifestParent) -Leaf
-            }
-            $ModuleInfo = @($ModuleInfo).Where{ $_.Name -eq $ModuleName }
+            throw ("Found multiple module manifest in the root of the path {0}." -f $ParameterValues["SourcePath"])
         }
 
         Write-Verbose ('@(ModuleInfo).Count: {0}' -f (@($ModuleInfo).Count | out-string)) -Verbose
         Write-Verbose ('@(ModuleInfo).Name: {0}' -f (@($ModuleInfo).Name | out-string)) -Verbose
         Write-Verbose ('@(ModuleInfo).Path: {0}' -f (@($ModuleInfo).Path | out-string)) -Verbose
 
-        if (@($ModuleInfo).Count -eq 1) {
-            Write-Debug "Updating BuildInfo SourcePath to $($ModuleInfo.Path)"
-            $ParameterValues["SourcePath"] = $ModuleInfo.Path
-        }
+        Write-Debug "Updating BuildInfo SourcePath to $($ModuleInfo.Path)"
+        $ParameterValues["SourcePath"] = $ModuleInfo.Path
 
         Write-Verbose ('ParameterValues["SourcePath"]: {0}' -f ($ParameterValues["SourcePath"] | out-string)) -Verbose
-
-        if (-Not $ModuleInfo) {
-            throw "Can't find a module manifest in $BuildManifestParent"
-        }
     }
 
     $BuildInfo = $BuildInfo | Update-Object $ParameterValues
