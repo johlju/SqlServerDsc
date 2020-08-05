@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlDatabaseObjectPermission
   - New integration tests to verify scenarios when passing a single permission.
+  - New integration tests to verify scenarios when current permission is
+    GrantWithGrant but should be permission Grant.
 
 ### Fixed
 
