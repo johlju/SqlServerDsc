@@ -5,9 +5,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Added a new helper function `Remove-SqlModuleStub` for tests to remove
+    the PowerShell SqlServer stub module when a test has ran.
+  - Added an alias `Get-ObjectNotFoundRecord` to the helper function
+    `Get-InvalidResultRecord` since both use the same code to generate
+    a mocked error record.
+
 ### Changed
 
 - SqlServerDsc
+  - All tests have been converted to run in Pester 5 (Pester 4 can no
+    longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
   - The module manifest property `DscResourcesToExport` now updates automatically
     using the pipeline.
   - Removed `Export-ModuleMember` from DSC resource that still had it.
