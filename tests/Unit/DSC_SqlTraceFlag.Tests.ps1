@@ -42,6 +42,8 @@ Invoke-TestSetup
 try
 {
     InModuleScope $script:dscResourceName {
+        Set-StrictMode -Version 1.0
+
         Describe "DSC_SqlTraceFlag\Get-TargetResource" -Tag 'Get'  {
             BeforeAll {
                 $mockServerName = 'TestServer'
@@ -209,8 +211,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $testParameters = $mockInst01Parameters
                 }
                 It 'Should throw for incorect parameters' {
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        $script:localizedData.NotConnectedToWMI -f $testParameters.InstanceName, $testParameters.ServerName
+                    )
+
                     {Get-TargetResource @testParameters} |
-                    Should -Throw -ExpectedMessage ("Was unable to connect to WMI information '{0}' in '{1}'." -f $mockInstanceName3, $mockServerName)
+                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
                 }
             }
 
@@ -222,8 +228,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     } -ParameterFilter $mockNewObject_ParameterFilter_FakeServerName -Verifiable
                 }
                 It 'Should throw for incorect parameters' {
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        $script:localizedData.NotConnectedToComputerManagement -f $testParameters.ServerName
+                    )
+
                     {Get-TargetResource @testParameters} |
-                    Should -Throw -ExpectedMessage ("Was unable to connect to ComputerManagement '{0}'." -f $mockFakeServerName)
+                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
                 }
             }
         }
@@ -481,7 +491,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
             }
 
-
             Context 'When both the parameters TraceFlags and TraceFlagsToInclude are assigned a value.' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
@@ -492,7 +501,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
 
                 It 'Should throw the correct error' {
-                    { Test-TargetResource @testParameters } | Should -Throw '(DRC0010)'
+                    { Test-TargetResource @testParameters } | Should -Throw '*(DRC0010)*'
                 }
 
                 It 'Should not be executed' {
@@ -510,7 +519,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
 
                 It 'Should throw the correct error' {
-                    { Test-TargetResource @testParameters } | Should -Throw '(DRC0010)'
+                    { Test-TargetResource @testParameters } | Should -Throw '*(DRC0010)*'
                 }
 
                 It 'Should not be executed' {
@@ -766,7 +775,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters} | Should -Throw '(DRC0010)'
+                    { Set-TargetResource @testParameters} | Should -Throw '*(DRC0010)*'
                 }
 
                 It 'Should not be executed' {
@@ -784,7 +793,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                 }
 
                 It 'Should throw the correct error' {
-                    { Set-TargetResource @testParameters } | Should -Throw '(DRC0010)'
+                    { Set-TargetResource @testParameters } | Should -Throw '*(DRC0010)*'
                 }
 
                 It 'Should not be executed' {
@@ -797,8 +806,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                     $testParameters = $mockInst01Parameters
                 }
                 It 'Should throw for incorect parameters' {
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        $script:localizedData.NotConnectedToWMI -f $testParameters.InstanceName, $testParameters.ServerName
+                    )
+
                     {Set-TargetResource @testParameters} |
-                    Should -Throw -ExpectedMessage ("Was unable to connect to WMI information '{0}' in '{1}'." -f $mockInstanceName3, $mockServerName)
+                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
                 }
             }
 
@@ -810,8 +823,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                     } -ParameterFilter $mockNewObject_ParameterFilter_FakeServerName -Verifiable
                 }
                 It 'Should throw for incorect parameters' {
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        $script:localizedData.NotConnectedToComputerManagement -f $testParameters.ServerName
+                    )
+
                     {Set-TargetResource @testParameters} |
-                    Should -Throw -ExpectedMessage ("Was unable to connect to ComputerManagement '{0}'." -f $mockFakeServerName)
+                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
                 }
             }
         }

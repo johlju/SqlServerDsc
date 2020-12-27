@@ -73,7 +73,7 @@ function Get-TargetResource
                 $errorMessage = $script:localizedData.EnumMemberNamesServerRoleGetError `
                     -f $ServerName, $InstanceName, $ServerRoleName
 
-                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                New-InvalidOperationException -Message $errorMessage
             }
         }
     }
@@ -197,7 +197,7 @@ function Set-TargetResource
                     $errorMessage = $script:localizedData.DropServerRoleSetError `
                         -f $ServerName, $InstanceName, $ServerRoleName
 
-                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    New-InvalidOperationException -Message $errorMessage
                 }
             }
 
@@ -224,7 +224,7 @@ function Set-TargetResource
                         $errorMessage = $script:localizedData.CreateServerRoleSetError `
                             -f $ServerName, $InstanceName, $ServerRoleName
 
-                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                        New-InvalidOperationException -Message $errorMessage
                     }
                 }
 
@@ -531,7 +531,7 @@ function Add-SqlDscServerRoleMember
         $errorMessage = $script:localizedData.AddMemberServerRoleSetError `
             -f $ServerName, $InstanceName, $ServerRoleName, $SecurityPrincipal
 
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        New-InvalidOperationException -Message $errorMessage
     }
 }
 
@@ -586,7 +586,7 @@ function Remove-SqlDscServerRoleMember
         $errorMessage = $script:localizedData.DropMemberServerRoleSetError `
             -f $ServerName, $InstanceName, $ServerRoleName, $SecurityPrincipal
 
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+        New-InvalidOperationException -Message $errorMessage
     }
 }
 
