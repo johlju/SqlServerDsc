@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - A new script analyzer rule to verify that `Import-SQLPSModule` is
+    present in each *-TargetResource. If it is not needed then the analyzer
+    rule should be overridden.
+
 ### Changed
 
 - SqlLogin
