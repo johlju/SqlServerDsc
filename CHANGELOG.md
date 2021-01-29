@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- SqlDatabaseUser
+  - Added -ServerName to Assert-SqlLogin. @PSBoundParameters doesn't capture $ServerName when it is not explicitly set by the caller. ([issue #1647](https://github.com/dsccommunity/SqlServerDsc/issues/1647)).
+
 ### Changed
 
 - SqlLogin
