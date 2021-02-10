@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed Assembly not loaded error
    ([issue #1680](https://github.com/dsccommunity/SqlServerDsc/issues/1680)).
   - Fixed $nul reference error when no actual traceflags are present
-  ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
+    ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
 
 ## [15.1.0] - 2021-02-02
 
