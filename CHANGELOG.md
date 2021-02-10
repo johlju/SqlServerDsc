@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlTraceFlag
   - Fixed Assembly not loaded error
    ([issue #1680](https://github.com/dsccommunity/SqlServerDsc/issues/1680)).
-  - Fixed $nul reference error when no actual traceflags are present
+  - Fixed $nul reference error when no actual traceflags are present.
+    Added two arrays to prevent a $nul reference at compare-object.
     ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
 
 ## [15.1.0] - 2021-02-02
