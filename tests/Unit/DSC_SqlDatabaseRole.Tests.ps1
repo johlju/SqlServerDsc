@@ -1214,6 +1214,498 @@ Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
             }
         }
     }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockGetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When only key parameters have values and database name does not exist' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'unknownDatabaseName'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+            }
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorMessage = $script:localizedData.DatabaseNotFound -f $mockGetTargetResourceParameters.DatabaseName
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+            }
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When only key parameters have values and the role does not exist' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'UnknownRoleName'
+            }
+        }
+
+        It 'Should return the state as Absent' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Absent'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Members | Should -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When only key parameters have values and the role exists' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+            }
+        }
+
+        It 'Should return the state as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When only key parameters have values and throwing with EnumMembers method' {
+        BeforeEach {
+            $mockInvalidOperationForEnumMethod = $true
+
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+            }
+        }
+
+        AfterAll {
+            $mockInvalidOperationForEnumMethod = $false
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorMessage = $script:localizedData.EnumDatabaseRoleMemberNamesError -f 'MyRole', 'AdventureWorks'
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage + '*')
+            }
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When parameter Members is assigned a value, the role exists, and the role members are in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+                $mockGetTargetResourceParameters.Members      = @('John', 'CONTOSO\KingJulian')
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as True' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as not null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Members | Should -Be $mockGetTargetResourceParameters.Members
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $result.Members | Should -Be $mockGetTargetResourceParameters.Members
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When parameter Members is assigned a value, the role exists, and the role members are not in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+                $mockGetTargetResourceParameters.Members      = @('John', 'CONTOSO\SQLAdmin')
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as False' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When both parameters MembersToInclude and Members are assigned a value' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.Members          = @('John', 'CONTOSO\KingJulian')
+                $mockGetTargetResourceParameters.MembersToInclude = 'John'
+            }
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+            }
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When parameter MembersToInclude is assigned a value, the role exists, and the role members are in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.MembersToInclude = 'John'
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as True' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as not null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Members | Should -Not -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $result.MembersToInclude | Should -Be $mockGetTargetResourceParameters.MembersToInclude
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When parameter MembersToInclude is assigned a value, the role exists, and the role members are not in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.MembersToInclude = 'CONTOSO\SQLAdmin'
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as False' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When both parameters MembersToExclude and Members are assigned a value' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.Members          = @('John', 'CONTOSO\KingJulian')
+                $mockGetTargetResourceParameters.MembersToExclude = 'John'
+
+            }
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+            }
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When parameter MembersToExclude is assigned a value, the role exists, and the role members are in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.MembersToExclude = 'CONTOSO\SQLAdmin'
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as True' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $result.MembersToExclude | Should -Be $mockGetTargetResourceParameters.MembersToExclude
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When parameter MembersToExclude is assigned a value, the role exists, and the role members are not in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.MembersToExclude = 'CONTOSO\KingJulian'
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as False' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
 }
 
 Describe 'Add-SqlDscDatabaseRoleMember' -Tag 'Helper' {
