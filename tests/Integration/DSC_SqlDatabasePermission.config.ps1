@@ -19,7 +19,8 @@ else
                 NodeName          = 'localhost'
                 CertificateFile   = $env:DscPublicCertificatePath
 
-                UserName          = "$env:COMPUTERNAME\SqlAdmin"
+                # This must be the FQDN username (username@domain).
+                UserName          = 'SqlAdmin@{0}.' -f $env:COMPUTERNAME
                 Password          = 'P@ssw0rd1'
 
                 ServerName        = $env:COMPUTERNAME
