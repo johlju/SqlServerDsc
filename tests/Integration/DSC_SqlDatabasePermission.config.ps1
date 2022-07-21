@@ -20,7 +20,7 @@ else
                 CertificateFile   = $env:DscPublicCertificatePath
 
                 # This must be the FQDN username (username@domain).
-                UserName          = 'SqlAdmin@{0}' -f $env:COMPUTERNAME
+                UserName          = '.\SqlAdmin'
                 Password          = 'P@ssw0rd1'
 
                 ServerName        = $env:COMPUTERNAME
