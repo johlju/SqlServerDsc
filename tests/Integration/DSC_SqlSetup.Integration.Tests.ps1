@@ -19,6 +19,11 @@ BeforeDiscovery {
 BeforeAll {
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
+    Write-Verbose -Verbose -Message (Get-DnsClientGlobalSetting | Out-String)
+    Write-Verbose -Verbose -Message (ipconfig /all | Out-String)
+
+    ipconfig /all
+
     # Need to define the variables here which will be used in Pester Run.
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlSetup'
