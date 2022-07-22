@@ -306,8 +306,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $denyState.State | Should -Be 'Deny'
             $denyState.Permission | Should -HaveCount 0
-            $denyState.Permission | Should -Not -Contain 'Select'
-            $denyState.Permission | Should -Not -Contain 'CreateTable'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
