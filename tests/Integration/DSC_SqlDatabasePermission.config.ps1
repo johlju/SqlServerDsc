@@ -19,8 +19,12 @@ else
                 NodeName          = 'localhost'
                 CertificateFile   = $env:DscPublicCertificatePath
 
-                # This must be the FQDN username (username@domain).
-                UserName          = '.\SqlAdmin'
+                <#
+                    This must be either the UPN username (e.g. username@domain.local)
+                    or the user name without the NetBIOS name (e.g. username). Using
+                    the NetBIOS name (e.g. DOMAIN\username) will not work.
+                #>
+                UserName          = 'SqlAdmin'
                 Password          = 'P@ssw0rd1'
 
                 ServerName        = $env:COMPUTERNAME
