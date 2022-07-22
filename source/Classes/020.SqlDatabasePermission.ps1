@@ -276,7 +276,7 @@ class SqlDatabasePermission : ResourceBase
 
                 foreach ($currentPermission in $filteredDatabasePermission)
                 {
-                    # get the permissions that is set to $true
+                    # Get the permission names that is set to $true
                     $permissionProperty = $currentPermission.PermissionType |
                         Get-Member -MemberType 'Property' |
                         Select-Object -ExpandProperty 'Name' -Unique |
