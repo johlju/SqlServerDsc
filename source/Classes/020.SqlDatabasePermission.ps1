@@ -253,9 +253,14 @@ class SqlDatabasePermission : ResourceBase
                 $databasePermissionInfo | ForEach-Object -Process {
                     # Convert from the type PermissionState to String.
                     [System.String] $_.PermissionState
-                } |
-                Select-Object -Unique
+                }
             )
+
+            <#
+                Single out unique permission in case it possible to receive the
+                same permission name twice.
+            #>
+            $permissionState = $permissionState | Select-Object -Unique
 
             foreach ($currentPermissionState in $permissionState)
             {
@@ -266,7 +271,7 @@ class SqlDatabasePermission : ResourceBase
 
                 $databasePermission = [DatabasePermission] @{
                     State = $currentPermissionState
-                    Permission = [System.String] @()
+                    Permission = [System.String[]] @()
                 }
 
                 foreach ($currentPermission in $filteredDatabasePermission)
