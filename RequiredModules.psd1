@@ -9,7 +9,12 @@
 
     InvokeBuild                    = 'latest'
     PSScriptAnalyzer               = 'latest'
-    Pester                         = 'latest'
+    Pester                     = @{
+        version = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
     Plaster                        = 'latest'
     ModuleBuilder                  = 'latest'
     ChangelogManagement            = 'latest'
