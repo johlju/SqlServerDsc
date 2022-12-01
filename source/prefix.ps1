@@ -42,7 +42,7 @@ if (Test-Path -Path $sqlManagementObjectsPath)
 
     foreach ($assemblyName in $smoAssemblies)
     {
-        Write-Debug -Message 'Loading assembly ''{0}''.' -f $assemblyName
+        Write-Debug -Message ('Loading assembly ''{0}''.' -f $assemblyName)
 
         Add-Type -Path (Join-Path $sqlManagementObjectsPath -ChildPath $assemblyName)
     }
