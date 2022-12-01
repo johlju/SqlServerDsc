@@ -75,6 +75,12 @@ NestedModule:
     AddToManifest: false
     Exclude: PSGetModuleInfo.xml
 
+  dbatools.library:
+    CopyOnly: true
+    Path: ./output/RequiredModules/dbatools.library
+    AddToManifest: false
+    Exclude: PSGetModuleInfo.xml
+
 ####################################################
 #          Pester Configuration (Sampler)          #
 ####################################################

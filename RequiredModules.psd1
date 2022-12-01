@@ -7,6 +7,17 @@
         }
     }
 
+    # Build dependencies needed for using DSC resources
+    'DscResource.Common'           = 'latest'
+
+    'dbatools.library'             = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
+
+    # Build dependencies for the pipeline
     InvokeBuild                    = 'latest'
     PSScriptAnalyzer               = 'latest'
 
@@ -27,7 +38,6 @@
     Sampler                        = 'latest'
     'Sampler.GitHubTasks'          = 'latest'
     MarkdownLinkCheck              = 'latest'
-    'DscResource.Common'           = 'latest'
     'DscResource.Test'             = 'latest'
     xDscResourceDesigner           = 'latest'
     'DscResource.DocGenerator'     = 'latest'
