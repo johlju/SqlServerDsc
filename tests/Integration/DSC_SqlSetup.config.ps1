@@ -328,11 +328,13 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 Uninstall-Module -Name 'SqlServer' -ErrorAction SilentlyContinue
 
                 $installModuleParameters = @{
-                    Name = 'SqlServer'
-                    RequiredVersion = $Using:Node.SqlServerModuleVersion
+                    #Name = 'SqlServer'
+                    Name = 'dbatools'
+                    #RequiredVersion = $Using:Node.SqlServerModuleVersion
                     Scope = 'AllUsers'
                     Force = $true
-                    AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
+                    #AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
+                    AllowPrerelease = $true
                     AllowClobber = $true # Needed to handle existens of module SQLPS.
                     PassThru = $true
                 }
@@ -340,7 +342,8 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 # Install the required SqlServer module version.
                 $installedModule = Install-Module @installModuleParameters
 
-                Write-Verbose -Message ('Installed SqlServer module version {0}' -f $installedModule.Version)
+                #Write-Verbose -Message ('Installed SqlServer module version {0}' -f $installedModule.Version)
+                Write-Verbose -Message ('Installed dbatools module version {0}' -f $installedModule.Version)
             }
 
             TestScript = {
@@ -364,7 +367,8 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 $moduleVersion = $null
                 $sqlServerModule = $null
 
-                $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable
+                #$sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable
+                $sqlServerModule = Get-Module -Name 'dbatools' -ListAvailable
 
                 if ($sqlServerModule)
                 {

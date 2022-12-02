@@ -836,7 +836,7 @@ function Import-SQLPSModule
     if ($Force.IsPresent)
     {
         Write-Verbose -Message $script:localizedData.ModuleForceRemoval -Verbose
-        Remove-Module -Name @('SqlServer', 'SQLPS', 'SQLASCmdlets') -Force -ErrorAction SilentlyContinue
+        Remove-Module -Name @('SqlServer', 'SQLPS', 'SQLASCmdlets', 'dbatools') -Force -ErrorAction SilentlyContinue
     }
 
     <#
@@ -845,7 +845,7 @@ function Import-SQLPSModule
         NOTE: There should actually only be either SqlServer or SQLPS loaded,
         otherwise there can be problems with wrong assemblies being loaded.
     #>
-    $loadedModuleName = (Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1).Name
+    $loadedModuleName = (Get-Module -Name @('SqlServer', 'SQLPS', 'dbatools') | Select-Object -First 1).Name
     if ($loadedModuleName)
     {
         Write-Verbose -Message ($script:localizedData.PowerShellModuleAlreadyImported -f $loadedModuleName) -Verbose
@@ -854,15 +854,24 @@ function Import-SQLPSModule
 
     $availableModuleName = $null
 
-    # Get the newest SqlServer module if more than one exist
-    $availableModule = Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
+    # Get the newest dbatools module if more than one exist
+    $availableModule = Get-Module -FullyQualifiedName 'dbatools' -ListAvailable |
         Sort-Object -Property 'Version' -Descending |
         Select-Object -First 1 -Property Name, Path, Version
+
+    if (-not $availableModule)
+    {
+        # Get the newest SqlServer module if more than one exist
+        $availableModule = Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
+            Sort-Object -Property 'Version' -Descending |
+            Select-Object -First 1 -Property Name, Path, Version
+    }
 
     if ($availableModule)
     {
         $availableModuleName = $availableModule.Name
-        Write-Verbose -Message ($script:localizedData.PreferredModuleFound) -Verbose
+
+        Write-Verbose -Message ($script:localizedData.PreferredModuleFound -f $availableModuleName) -Verbose
     }
     else
     {
@@ -915,7 +924,7 @@ function Import-SQLPSModule
                 Only return the object with module type 'Manifest'.
                 SqlServer only returns one object (of module type 'Script'), so no need to do anything for SqlServer module.
             #>
-            if ($availableModuleName -ne 'SqlServer')
+            if ($availableModuleName -notin @('SqlServer', 'dbatools'))
             {
                 $importedModule = $importedModule | Where-Object -Property 'ModuleType' -EQ -Value 'Manifest'
             }
