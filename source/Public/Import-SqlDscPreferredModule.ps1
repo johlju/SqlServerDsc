@@ -46,6 +46,7 @@ function Import-SqlDscPreferredModule
         $Force
     )
 
+    Write-Warning -Message '-----------------------* IMPORTING PREFERRED MODULE!!! *-----------------------'
     if ($Force.IsPresent)
     {
         Write-Verbose -Message $script:localizedData.PreferredModule_ForceRemoval
