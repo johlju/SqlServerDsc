@@ -2,6 +2,9 @@
 param ()
 
 BeforeDiscovery {
+    Write-Verbose -Message $env:PSModulePath -Verbose
+    Write-Verbose -Message (Get-Module SqlServerDsc -ListAvailable | Out-String) -Verbose
+
     try
     {
         Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
@@ -10,9 +13,6 @@ BeforeDiscovery {
     {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
     }
-
-    Write-Verbose -Message $env:PSModulePath -Verbose
-    Write-Verbose -Message (Get-Module SqlServerDsc -ListAvailable | Out-String) -Verbose
 
     <#
         Need to define that variables here to be used in the Pester Discover to

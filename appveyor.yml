@@ -9,8 +9,8 @@ skip_tags: true
 # See https://www.appveyor.com/docs/windows-images-software
 # DEBUG: for debug purpose, comment and un-comment images as needed.
 image:
-- Visual Studio 2019 # Windows Server 2019
-#- Visual Studio 2017 # Windows Server 2016
+#- Visual Studio 2019 # Windows Server 2019
+- Visual Studio 2017 # Windows Server 2016
 #- Visual Studio 2013 # Windows Server 2012 R2
 
 environment:
