@@ -79,7 +79,7 @@ test_script:
         #'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
-        'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
@@ -89,7 +89,7 @@ test_script:
         #'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
         ## Group 3
         #'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-        'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
@@ -115,5 +115,5 @@ on_finish:
 - ps: |
     if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
-    #$blockRdp = $true
+    $blockRdp = $true
     iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

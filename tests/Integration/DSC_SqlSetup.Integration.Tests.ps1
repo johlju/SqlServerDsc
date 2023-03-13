@@ -38,11 +38,17 @@ BeforeAll {
     $script:dscResourceFriendlyName = 'SqlSetup'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
+    Write-Verbose -Message $env:PSModulePath -Verbose
+    Write-Verbose -Message (Get-Module SqlServerDsc -ListAvailable | Out-String) -Verbose
+
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Integration'
+
+    $blockRdp = $true
+    iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
     <#
     .SYNOPSIS
@@ -169,7 +175,7 @@ BeforeAll {
 }
 
 AfterAll {
-    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+    #Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
