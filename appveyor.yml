@@ -51,6 +51,9 @@ build_script:
     # Only run for pull requests
     #if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
+    Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
+    ./dotnet-install.ps1
+
     dotnet tool install --global GitVersion.Tool
     $env:IGNORE_NORMALISATION_GIT_HEAD_MOVE = 1 # cSpell: disable-line
     dotnet-gitversion
