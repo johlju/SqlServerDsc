@@ -1,0 +1,47 @@
+{
+    // cSpell: ignore sqlserverdsc davidanson pspester dotnettools gruntfuggly azuretools
+    "name": "sqlserverdsc",
+    "workspaceFolder": "/SqlServerDsc",
+    "dockerComposeFile": [
+        "docker-compose.yml"
+    ],
+    "remoteEnv": {
+        "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
+        "MY_SERVERS": "sqlserverdsc1,sqlserverdsc2",
+        "MY_SERVER": "sqlserverdsc1"
+    },
+    "service": "sqlserverdsc1",
+    // Add the IDs of extensions you want installed when the container is created.
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.powershell",
+                "pspester.pester-test",
+                "davidanson.vscode-markdownlint",
+                "streetsidesoftware.code-spell-checker",
+                // "ms-mssql.mssql",
+                "github.vscode-pull-request-github",
+                "ms-dotnettools.csharp",
+                "gruntfuggly.todo-tree",
+                "ms-azuretools.vscode-docker"
+            ],
+            "settings": {
+                "powershell.powerShellAdditionalExePaths": {
+                    "PowerShell": "/opt/microsoft/powershell/7/pwsh"
+                },
+                "powershell.powerShellDefaultVersion": "PowerShell",
+                "terminal.integrated.profiles.linux": {
+                    "pwsh": {
+                        "path": "/opt/microsoft/powershell/7/pwsh",
+                        "icon": "terminal-powershell"
+                    }
+                },
+                "terminal.integrated.shell.linux": "pwsh",
+                "terminal.integrated.defaultProfile.linux": "pwsh"
+            }
+        }
+    }
+    // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
+    // "shutdownAction": "none",
+    //"postCreateCommand": "pwsh -c './build.ps1 -ResolveDependency -Tasks noop'"
+}

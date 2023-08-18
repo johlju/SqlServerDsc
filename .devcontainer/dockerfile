@@ -1,0 +1,38 @@
+#FROM mcr.microsoft.com/mssql/server:2022-latest
+FROM ubuntu:22.04
+USER root
+
+# Update the list of packages
+RUN apt-get update
+
+# --- Install PowerShell ---
+# Install pre-requisite packages.
+RUN apt-get install -y wget apt-transport-https software-properties-common
+# Download the Microsoft repository GPG keys
+RUN wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+# Register the Microsoft repository GPG keys
+RUN dpkg -i packages-microsoft-prod.deb
+# Delete the the Microsoft repository GPG keys file
+RUN rm packages-microsoft-prod.deb
+# Update the list of packages after we added packages.microsoft.com
+RUN apt-get update
+# Install PowerShell
+RUN apt-get install -y powershell
+
+# install git
+RUN apt-get install -y git
+
+# Install dotnet
+RUN apt-get install -y dotnet-sdk-7.0
+
+# Install GitVersion
+RUN dotnet tool install --global GitVersion.Tool
+
+# Some APT cleanup
+RUN apt-get autoremove -y && apt-get clean -y
+
+# Save command line history
+RUN mkdir /SqlServerDsc
+
+ENTRYPOINT ["tail"]
+CMD ["-f","/dev/null"]

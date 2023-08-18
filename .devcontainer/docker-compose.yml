@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  sqlserverdsc1:
+    container_name: sqlserverdsc1
+    hostname: sqlserverdsc1
+    build: .
+    image: sqlserverdsc:latest
+    # # Environment variables for SQL Server.
+    # # Below is a well-known public password, can be ignored by any secret scanning.
+    # environment:
+    #   - ACCEPT_EULA=Y
+    #   - MSSQL_SA_PASSWORD=adminP@ssw0rd1
+    #   - MSSQL_AGENT_ENABLED=True
+    #   - MSSQL_PID=Developer
+    #   - MSSQL_COLLATION=Finnish_Swedish_CI_AS
+    # ports:
+    #   - 1401:1433/tcp
+    volumes:
+      # Update this to wherever you want VS Code to mount the folder of your project
+      - ..:/SqlServerDsc:cached
+    #network_mode: service:db
+  sqlserverdsc2:
+    container_name: sqlserverdsc2
+    hostname: sqlserverdsc2
+    build: .
+    image: sqlserverdsc:latest
+    # Environment variables for SQL Server.
+    # Below is a well-known public password, can be ignored by any secret scanning.
+    # environment:
+    #   - ACCEPT_EULA=Y
+    #   - MSSQL_SA_PASSWORD=adminP@ssw0rd1
+    #   - MSSQL_AGENT_ENABLED=True
+    #   - MSSQL_PID=Developer
+    #   - MSSQL_COLLATION=Finnish_Swedish_CI_AS
+    # ports:
+    #   - 1402:1433/tcp
+    volumes:
+      # Update this to wherever you want VS Code to mount the folder of your project
+      - ..:/SqlServerDsc:cached
+    #network_mode: service:db
