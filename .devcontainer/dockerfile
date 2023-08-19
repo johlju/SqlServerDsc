@@ -1,5 +1,6 @@
 #FROM mcr.microsoft.com/mssql/server:2022-latest
 FROM ubuntu:22.04
+#FROM mcr.microsoft.com/windows/servercore:ltsc2022
 USER root
 
 # Update the list of packages
@@ -8,8 +9,11 @@ RUN apt-get update
 # Install dotnet
 RUN apt-get install -y dotnet-sdk-7.0
 
+# Create a new nuget config in current folder
+RUN dotnet new nugetconfig
+
 # Install GitVersion
-RUN dotnet tool install --global GitVersion.Tool --version 5.*
+RUN dotnet tool install --global GitVersion.Tool --version 5.* --configfile nuget.config --verbosity detailed
 
 # install git
 RUN apt-get install -y git
