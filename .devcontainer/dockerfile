@@ -5,6 +5,15 @@ USER root
 # Update the list of packages
 RUN apt-get update
 
+# Install dotnet
+RUN apt-get install -y dotnet-sdk-7.0
+
+# Install GitVersion
+RUN dotnet tool install --global GitVersion.Tool
+
+# install git
+RUN apt-get install -y git
+
 # --- Install PowerShell ---
 # Install pre-requisite packages.
 RUN apt-get install -y wget apt-transport-https software-properties-common
@@ -18,15 +27,6 @@ RUN rm packages-microsoft-prod.deb
 RUN apt-get update
 # Install PowerShell
 RUN apt-get install -y powershell
-
-# install git
-RUN apt-get install -y git
-
-# Install dotnet
-RUN apt-get install -y dotnet-sdk-7.0
-
-# Install GitVersion
-RUN dotnet tool install --global GitVersion.Tool
 
 # Some APT cleanup
 RUN apt-get autoremove -y && apt-get clean -y
