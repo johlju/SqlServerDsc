@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added new public command:
     - `Get-SqlDscConfigurationOption` - Returns the available configuration
       options that can be used with the DSC resource _SqlConfiguration_.
-  - Added a .devcontainer that can be used by Visual Studio Code.
+  - Added a Dev-container that can be used by Visual Studio Code.
 
 ### Changed
 
